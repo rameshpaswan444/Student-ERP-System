@@ -14,6 +14,7 @@ import com.ramesh.studenterp.repository.RoleRepository;
 import com.ramesh.studenterp.repository.UserRepository;
 import com.ramesh.studenterp.security.CustomUserDetails;
 import com.ramesh.studenterp.security.jwt.JwtService;
+import com.ramesh.studenterp.service.EmailService;
 import com.ramesh.studenterp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,6 +35,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final EmailService emailService;
 
     @Override
     public UserResponse register(RegisterRequest request) {
@@ -56,7 +58,11 @@ public class UserServiceImpl implements UserService {
         user.setRole(studentRole);
 
         User savedUser = userRepository.save(user);
+        System.out.println("Sending email to: " + savedUser.getEmail());
 
+        emailService.sendWelcomeEmail(savedUser);
+
+        System.out.println("Email sent successfully.");
 
         return userMapper.toResponse(savedUser);
     }
