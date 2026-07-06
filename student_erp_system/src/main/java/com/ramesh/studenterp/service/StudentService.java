@@ -4,6 +4,7 @@ import com.ramesh.studenterp.dto.request.CreateStudentRequest;
 import com.ramesh.studenterp.dto.response.StudentResponse;
 import com.ramesh.studenterp.dto.response.StudentTranscriptResponse;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 public interface StudentService {
@@ -19,4 +20,8 @@ public interface StudentService {
     void deleteStudent(Long id);
 
     StudentTranscriptResponse getStudentTranscript(Long studentId);
+
+    ByteArrayInputStream downloadTranscript(Long studentId);
+
+    void emailTranscript(Long studentId);
 }

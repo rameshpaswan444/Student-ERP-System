@@ -15,10 +15,13 @@ import com.ramesh.studenterp.mapper.StudentMapper;
 import com.ramesh.studenterp.repository.MarkRepository;
 import com.ramesh.studenterp.repository.StudentRepository;
 import com.ramesh.studenterp.repository.UserRepository;
+import com.ramesh.studenterp.service.EmailService;
+import com.ramesh.studenterp.service.PdfService;
 import com.ramesh.studenterp.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
@@ -29,6 +32,8 @@ public class StudentServiceImpl implements StudentService {
     private final UserRepository userRepository;
     private final MarkRepository markRepository;
     private final StudentMapper studentMapper;
+    private final PdfService pdfService;
+    private final EmailService emailService;
 
     @Override
     public StudentResponse createStudent(CreateStudentRequest request) {
@@ -143,6 +148,60 @@ public class StudentServiceImpl implements StudentService {
                 .subjects(subjects)
                 .build();
     }
+
+    @Override
+    public ByteArrayInputStream downloadTranscript(Long studentId) {
+        return pdfService.generateTranscript(studentId);
+    }
+
+    @Override
+    public void emailTranscript(Long studentId) {
+
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Student not found."));
+
+        ByteArrayInputStream pdf =
+                pdfService.generateTranscript(studentId);
+
+        String html = """
+            <html>
+            <body>
+
+            <h2>Official Transcript</h2>
+
+            <p>Dear <b>%s</b>,</p>
+
+            <p>
+            Please find your official transcript attached to this email.
+            </p>
+
+            <p>
+            If you have any questions, please contact the administration.
+            </p>
+
+            <br>
+
+            <p>
+            Regards,<br>
+            Student ERP Team
+            </p>
+
+            </body>
+            </html>
+            """.formatted(
+                student.getUser().getFirstName()
+        );
+
+        emailService.sendEmailWithAttachment(
+                student.getUser().getEmail(),
+                "Official Transcript",
+                html,
+                pdf,
+                "Transcript.pdf"
+        );
+    }
+
     private double getGradePoint(Grade grade) {
 
         return switch (grade) {

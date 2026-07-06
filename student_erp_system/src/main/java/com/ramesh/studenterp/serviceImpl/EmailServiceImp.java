@@ -4,11 +4,14 @@ import com.ramesh.studenterp.entity.User;
 import com.ramesh.studenterp.service.EmailService;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayInputStream;
 
 @Service
 @AllArgsConstructor
@@ -76,4 +79,35 @@ public class EmailServiceImp implements EmailService {
         );
 
     }
+
+    @Override
+    public void sendEmailWithAttachment(String to, String subject, String html, ByteArrayInputStream pdf, String fileName) {
+
+        try {
+
+            MimeMessage message = mailSender.createMimeMessage();
+
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(html, true);
+
+            helper.addAttachment(
+                    fileName,
+                    new ByteArrayResource(pdf.readAllBytes())
+            );
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Failed to send email with attachment.",
+                    e
+            );
+        }
+    }
+
 }

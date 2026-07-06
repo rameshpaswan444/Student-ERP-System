@@ -6,9 +6,14 @@ import com.ramesh.studenterp.dto.response.StudentTranscriptResponse;
 import com.ramesh.studenterp.service.StudentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @RestController
@@ -65,6 +70,37 @@ public class StudentController {
 
         return ResponseEntity.ok(
                 studentService.getStudentTranscript(id));
+    }
+
+    @GetMapping("/{id}/transcript/pdf")
+    public ResponseEntity<InputStreamResource> downloadTranscript(
+            @PathVariable Long id) {
+
+        ByteArrayInputStream pdf =
+                studentService.downloadTranscript(id);
+
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.add(
+                HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=transcript.pdf"
+        );
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdf));
+    }
+
+    @PostMapping("/{id}/transcript/email")
+    public ResponseEntity<String> emailTranscript(
+            @PathVariable Long id) {
+
+        studentService.emailTranscript(id);
+
+        return ResponseEntity.ok(
+                "Transcript emailed successfully."
+        );
     }
 
 
