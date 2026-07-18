@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-06T15:40:12+0545",
+    date = "2026-07-09T23:22:27+0545",
     comments = "version: 1.6.3, compiler: javac, environment: Java 21.0.5 (Oracle Corporation)"
 )
 @Component
@@ -54,6 +54,8 @@ public class MarkMapperImpl implements MarkMapper {
 
         markResponse.studentName( mark.getEnrollment().getStudent().getUser().getFirstName() + " " + mark.getEnrollment().getStudent().getUser().getLastName() );
         markResponse.percentage( (mark.getObtainedMarks() / mark.getTotalMarks()) * 100 );
+
+        setAdditionalFields( mark, markResponse );
 
         return markResponse.build();
     }

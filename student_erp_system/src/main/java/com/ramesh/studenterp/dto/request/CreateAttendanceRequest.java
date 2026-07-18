@@ -12,13 +12,16 @@ import java.time.LocalDate;
 @Builder
 public class CreateAttendanceRequest {
 
-    @NotNull
+    @NotNull(message = "Enrollment ID is required.")
     private Long enrollmentId;
 
-    @NotNull
+    @NotNull(message = "Teacher ID is required.")
+    private Long teacherId;
+
+    @NotNull(message = "Attendance date is required.")
     private LocalDate attendanceDate;
 
-    @NotNull
+    @NotNull(message = "Attendance status is required.")
     private AttendanceStatus status;
 
     private String remarks;

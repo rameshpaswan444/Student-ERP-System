@@ -3,8 +3,10 @@ package com.ramesh.studenterp.mapper;
 import com.ramesh.studenterp.dto.request.CreateMarkRequest;
 import com.ramesh.studenterp.dto.response.MarkResponse;
 import com.ramesh.studenterp.entity.Mark;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface MarkMapper {
@@ -31,4 +33,26 @@ public interface MarkMapper {
             expression = "java((mark.getObtainedMarks() / mark.getTotalMarks()) * 100)"
     )
     MarkResponse toResponse(Mark mark);
+
+    @AfterMapping
+    default void setAdditionalFields(
+            Mark mark,
+            @MappingTarget MarkResponse.MarkResponseBuilder builder) {
+
+        builder.studentName(
+                mark.getEnrollment()
+                        .getStudent()
+                        .getUser()
+                        .getFirstName()
+                        + " "
+                        + mark.getEnrollment()
+                        .getStudent()
+                        .getUser()
+                        .getLastName()
+        );
+
+        builder.percentage(
+                (mark.getObtainedMarks() / mark.getTotalMarks()) * 100
+        );
+    }
 }

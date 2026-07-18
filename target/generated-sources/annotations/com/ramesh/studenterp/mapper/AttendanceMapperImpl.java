@@ -6,12 +6,13 @@ import com.ramesh.studenterp.entity.Attendance;
 import com.ramesh.studenterp.entity.Enrollment;
 import com.ramesh.studenterp.entity.Student;
 import com.ramesh.studenterp.entity.Subject;
+import com.ramesh.studenterp.entity.Teacher;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-06T15:40:12+0545",
+    date = "2026-07-09T23:16:59+0545",
     comments = "version: 1.6.3, compiler: javac, environment: Java 21.0.5 (Oracle Corporation)"
 )
 @Component
@@ -44,12 +45,15 @@ public class AttendanceMapperImpl implements AttendanceMapper {
         attendanceResponse.studentId( attendanceEnrollmentStudentId( attendance ) );
         attendanceResponse.subjectId( attendanceEnrollmentSubjectId( attendance ) );
         attendanceResponse.subjectName( attendanceEnrollmentSubjectSubjectName( attendance ) );
+        attendanceResponse.teacherId( attendanceTeacherId( attendance ) );
         attendanceResponse.id( attendance.getId() );
         attendanceResponse.attendanceDate( attendance.getAttendanceDate() );
         attendanceResponse.status( attendance.getStatus() );
         attendanceResponse.remarks( attendance.getRemarks() );
 
         attendanceResponse.studentName( attendance.getEnrollment().getStudent().getUser().getFirstName() + " " + attendance.getEnrollment().getStudent().getUser().getLastName() );
+
+        setAdditionalFields( attendance, attendanceResponse );
 
         return attendanceResponse.build();
     }
@@ -96,5 +100,13 @@ public class AttendanceMapperImpl implements AttendanceMapper {
             return null;
         }
         return subject.getSubjectName();
+    }
+
+    private Long attendanceTeacherId(Attendance attendance) {
+        Teacher teacher = attendance.getTeacher();
+        if ( teacher == null ) {
+            return null;
+        }
+        return teacher.getId();
     }
 }

@@ -5,7 +5,15 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "attendance")
+@Table(name = "attendance",
+uniqueConstraints = {
+        @UniqueConstraint(
+                columnNames = {
+                        "enrollment_id",
+                        "attendance_date"
+                }
+        )
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,4 +37,8 @@ public class Attendance {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "enrollment_id", nullable = false)
     private Enrollment enrollment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id", nullable = false)
+    private Teacher teacher;
 }

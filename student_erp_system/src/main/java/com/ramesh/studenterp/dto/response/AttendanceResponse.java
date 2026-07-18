@@ -23,6 +23,10 @@ public class AttendanceResponse {
 
     private String subjectName;
 
+    private Long teacherId;
+
+    private String teacherName;
+
     private LocalDate attendanceDate;
 
     private AttendanceStatus status;
